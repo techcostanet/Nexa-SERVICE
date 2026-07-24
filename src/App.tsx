@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './lib/ThemeContext';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
 import { OverviewPage } from './pages/dashboard/OverviewPage';
@@ -13,7 +14,7 @@ import { QuoteApprovalPage } from './pages/public/QuoteApprovalPage';
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col text-slate-900 dark:text-slate-100 transition-colors">
       <Navbar />
       <div className="flex flex-1">
         <Sidebar />
@@ -27,22 +28,25 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 
 export function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Rotas Públicas */}
-        <Route path="/solicitar/:tenantSlug" element={<ClientRequestPage />} />
-        <Route path="/aprovar/:quoteToken" element={<QuoteApprovalPage />} />
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Rotas Públicas */}
+          <Route path="/solicitar/:tenantSlug" element={<ClientRequestPage />} />
+          <Route path="/aprovar/:quoteToken" element={<QuoteApprovalPage />} />
 
-        {/* Rotas do Painel do Prestador */}
-        <Route path="/" element={<DashboardLayout><OverviewPage /></DashboardLayout>} />
-        <Route path="/chamados" element={<DashboardLayout><ServiceRequestsPage /></DashboardLayout>} />
-        <Route path="/orcamentos" element={<DashboardLayout><QuoteGeneratorPage /></DashboardLayout>} />
-        <Route path="/clientes" element={<DashboardLayout><ClientsPage /></DashboardLayout>} />
-        <Route path="/catalogo" element={<DashboardLayout><CatalogPage /></DashboardLayout>} />
-        <Route path="/financeiro" element={<DashboardLayout><FinancialPage /></DashboardLayout>} />
-      </Routes>
-    </BrowserRouter>
+          {/* Rotas do Painel do Prestador */}
+          <Route path="/" element={<DashboardLayout><OverviewPage /></DashboardLayout>} />
+          <Route path="/chamados" element={<DashboardLayout><ServiceRequestsPage /></DashboardLayout>} />
+          <Route path="/orcamentos" element={<DashboardLayout><QuoteGeneratorPage /></DashboardLayout>} />
+          <Route path="/clientes" element={<DashboardLayout><ClientsPage /></DashboardLayout>} />
+          <Route path="/catalogo" element={<DashboardLayout><CatalogPage /></DashboardLayout>} />
+          <Route path="/financeiro" element={<DashboardLayout><FinancialPage /></DashboardLayout>} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
 export default App;
+

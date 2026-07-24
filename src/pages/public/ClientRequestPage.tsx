@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Wrench, Upload, Send, CheckCircle2, MapPin, Phone, Mail, User, FileText, Camera } from 'lucide-react';
 import { mockStore, DEMO_TENANT } from '../../lib/firebase';
+import packageJson from '../../../package.json';
+
 
 export const ClientRequestPage: React.FC = () => {
   const { tenantSlug } = useParams<{ tenantSlug: string }>();
@@ -279,9 +281,11 @@ export const ClientRequestPage: React.FC = () => {
 
       </div>
 
-      <footer className="text-center text-xs text-slate-600 mt-8">
-        Nexa SERVICE Multi-Tenant Platform &copy; 2026 - Todos os direitos reservados.
+      <footer className="text-center text-xs text-slate-500 dark:text-slate-500 mt-8 space-y-1">
+        <p>Nexa SERVICE Multi-Tenant Platform &copy; 2026 - Todos os direitos reservados.</p>
+        <p className="font-mono text-[11px]">Versão do Sistema: v{packageJson.version}</p>
       </footer>
     </div>
   );
 };
+

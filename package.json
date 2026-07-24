@@ -1,13 +1,15 @@
 {
   "name": "nexa-service",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && firebase deploy --only hosting",
+    "release": "npm version patch && git add . && git commit -m \"release: nova versao do sistema\" && git push origin main && npm run deploy"
   },
   "dependencies": {
     "clsx": "^2.1.1",
