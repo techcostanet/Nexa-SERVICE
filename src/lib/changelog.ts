@@ -10,6 +10,16 @@ export interface ChangeLogEntry {
 
 export const CHANGELOG_HISTORY: ChangeLogEntry[] = [
   {
+    version: '1.3.0',
+    date: '2026-07-24',
+    title: 'URLs Personalizadas por Cliente (Multi-Tenant Slugs) & Recomendações SaaS',
+    changes: [
+      { type: 'feature', description: 'Geração e personalização de URLs exclusivas para cada cliente/licenciado (/solicitar/nome-do-cliente).' },
+      { type: 'feature', description: 'Campo de Slug customizável no cadastro do licenciado no painel de licenças.' },
+      { type: 'improvement', description: 'Atalho de teste e cópia rápida de URL do cliente na tabela de licenciados.' }
+    ]
+  },
+  {
     version: '1.2.0',
     date: '2026-07-24',
     title: 'Módulo de Venda de Licenças SaaS & Correção do Tema Claro Padrão',

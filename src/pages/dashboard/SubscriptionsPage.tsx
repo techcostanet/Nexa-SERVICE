@@ -29,6 +29,7 @@ export const SubscriptionsPage: React.FC = () => {
 
   // Form State
   const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [ownerName, setOwnerName] = useState('');
   const [document, setDocument] = useState('');
@@ -39,18 +40,27 @@ export const SubscriptionsPage: React.FC = () => {
 
   const filteredTenants = tenants.filter(t => 
     t.name.toLowerCase().includes(search.toLowerCase()) ||
+    t.slug.toLowerCase().includes(search.toLowerCase()) ||
     t.ownerName.toLowerCase().includes(search.toLowerCase()) ||
     t.document.includes(search) ||
     t.email.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleNameChange = (val: string) => {
+    setName(val);
+    if (!slug) {
+      setSlug(val.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'));
+    }
+  };
+
   const handleCreateTenant = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !ownerName || !email || !document) return;
 
-    const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const finalSlug = slug.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-') || 'cliente-demo';
+
     mockStore.addTenant({
-      slug,
+      slug: finalSlug,
       name,
       companyName: companyName || name,
       ownerName,
@@ -70,6 +80,7 @@ export const SubscriptionsPage: React.FC = () => {
     setShowAddModal(false);
     // Reset Form
     setName('');
+    setSlug('');
     setCompanyName('');
     setOwnerName('');
     setDocument('');
@@ -185,6 +196,7 @@ export const SubscriptionsPage: React.FC = () => {
             <thead className="bg-slate-100 dark:bg-slate-950/80 text-slate-700 dark:text-slate-400 uppercase font-semibold border-b border-slate-200 dark:border-slate-800">
               <tr>
                 <th className="p-4">Cliente / Empresa</th>
+                <th className="p-4">URL Exclusiva do Cliente</th>
                 <th className="p-4">Responsável & Contato</th>
                 <th className="p-4">Documento (CPF/CNPJ)</th>
                 <th className="p-4">Status do Acesso</th>
@@ -202,6 +214,24 @@ export const SubscriptionsPage: React.FC = () => {
                     <div className="text-slate-500 dark:text-slate-400 flex items-center gap-1 text-[11px] mt-0.5">
                       <Building className="w-3 h-3" />
                       <span>{t.companyName || t.name}</span>
+                    </div>
+                  </td>
+
+                  {/* Custom Client URL */}
+                  <td className="p-4">
+                    <div className="flex items-center gap-1.5">
+                      <code className="bg-slate-100 dark:bg-slate-950 text-blue-600 dark:text-blue-400 font-mono text-[11px] px-2 py-1 rounded border border-slate-200 dark:border-slate-800">
+                        /solicitar/{t.slug}
+                      </code>
+                      <a
+                        href={`/solicitar/${t.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-1 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                        title="Testar URL do Cliente"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </a>
                     </div>
                   </td>
 
@@ -291,18 +321,37 @@ export const SubscriptionsPage: React.FC = () => {
             </div>
 
             <form onSubmit={handleCreateTenant} className="space-y-3">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Nome da Empresa / Nome Fantasia *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ex: ClimaTech Serviços LTDA"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="glass-input w-full text-xs"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Nome da Empresa / Nome Fantasia *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: ClimaTech Serviços LTDA"
+                    value={name}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    className="glass-input w-full text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    URL Personalizada do Cliente (Slug) *
+                  </label>
+                  <div className="relative flex items-center">
+                    <span className="absolute left-3 text-[11px] font-mono text-slate-400">/solicitar/</span>
+                    <input
+                      type="text"
+                      required
+                      placeholder="climatech"
+                      value={slug}
+                      onChange={(e) => setSlug(e.target.value)}
+                      className="glass-input w-full text-xs pl-20 font-mono text-blue-600 dark:text-blue-400"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
