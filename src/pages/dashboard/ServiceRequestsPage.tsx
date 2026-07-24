@@ -32,11 +32,11 @@ export const ServiceRequestsPage: React.FC = () => {
       
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
-            <ClipboardList className="w-6 h-6 text-blue-500" />
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <ClipboardList className="w-6 h-6 text-blue-600 dark:text-blue-500" />
             Chamados & Solicitações de Serviço
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Gerencie todas as solicitações recebidas via formulário público do seu tenant.
           </p>
         </div>

@@ -28,11 +28,15 @@ export const DEMO_TENANT: Tenant = {
   id: 'tenant-nexa-demo',
   slug: 'nexa-solucoes',
   name: 'Nexa Soluções Técnicas & Climatização',
+  companyName: 'Nexa Soluções Técnicas EIRELI',
+  ownerName: 'Ricardo Costa',
   document: '45.123.890/0001-99',
   email: 'contato@nexasolucoes.com.br',
   phone: '(11) 98765-4321',
   logoUrl: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=150&auto=format&fit=crop&q=80',
   plan: 'pro',
+  status: 'active',
+  expirationDate: '2026-12-31',
   settings: {
     primaryColor: '#0066ff',
     termsAndConditions: 'Validade do orçamento: 10 dias. Pagamento em até 3x sem juros.',
@@ -351,6 +355,38 @@ class MockStore {
     this.financial.unshift(newT);
     return newT;
   }
+
+  // Tenant / Subscriptions Licensing
+  getTenants() { return this.tenants; }
+  
+  addTenant(tenantData: Omit<Tenant, 'id' | 'createdAt'>) {
+    const newTenant: Tenant = {
+      ...tenantData,
+      id: `tenant-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
+    this.tenants.unshift(newTenant);
+    return newTenant;
+  }
+
+  updateTenantStatus(tenantId: string, status: Tenant['status'], expirationDate?: string) {
+    const t = this.tenants.find(item => item.id === tenantId);
+    if (t) {
+      t.status = status;
+      if (expirationDate) t.expirationDate = expirationDate;
+    }
+    return t;
+  }
+
+  resetTenantPassword(tenantId: string) {
+    const t = this.tenants.find(item => item.id === tenantId);
+    return {
+      success: true,
+      email: t?.email || '',
+      tempPassword: `Nexa@${Math.floor(100000 + Math.random() * 900000)}`
+    };
+  }
 }
 
 export const mockStore = new MockStore();
+

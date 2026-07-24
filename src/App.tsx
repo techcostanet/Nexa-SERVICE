@@ -9,6 +9,7 @@ import { QuoteGeneratorPage } from './pages/dashboard/QuoteGeneratorPage';
 import { ClientsPage } from './pages/dashboard/ClientsPage';
 import { CatalogPage } from './pages/dashboard/CatalogPage';
 import { FinancialPage } from './pages/dashboard/FinancialPage';
+import { SubscriptionsPage } from './pages/dashboard/SubscriptionsPage';
 import { ClientRequestPage } from './pages/public/ClientRequestPage';
 import { QuoteApprovalPage } from './pages/public/QuoteApprovalPage';
 
@@ -42,6 +43,7 @@ export function App() {
           <Route path="/clientes" element={<DashboardLayout><ClientsPage /></DashboardLayout>} />
           <Route path="/catalogo" element={<DashboardLayout><CatalogPage /></DashboardLayout>} />
           <Route path="/financeiro" element={<DashboardLayout><FinancialPage /></DashboardLayout>} />
+          <Route path="/licencas" element={<DashboardLayout><SubscriptionsPage /></DashboardLayout>} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

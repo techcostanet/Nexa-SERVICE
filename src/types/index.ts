@@ -2,11 +2,15 @@ export interface Tenant {
   id: string;
   slug: string;
   name: string;
+  companyName?: string;
   document: string; // CNPJ / CPF
+  ownerName: string;
   email: string;
   phone: string;
   logoUrl?: string;
   plan: 'free' | 'pro' | 'enterprise';
+  status: 'active' | 'blocked' | 'trial' | 'pending_payment';
+  expirationDate: string;
   settings: {
     primaryColor?: string;
     termsAndConditions?: string;

@@ -8,7 +8,8 @@ import {
   Package,
   CircleDollarSign,
   QrCode,
-  Sparkles
+  Sparkles,
+  ShieldCheck
 } from 'lucide-react';
 import { DEMO_TENANT } from '../../lib/firebase';
 import packageJson from '../../../package.json';
@@ -21,6 +22,7 @@ export const Sidebar: React.FC = () => {
     { to: '/clientes', label: 'Cadastro de Clientes', icon: Users },
     { to: '/catalogo', label: 'Produtos & Serviços', icon: Package },
     { to: '/financeiro', label: 'Gestão Financeira', icon: CircleDollarSign },
+    { to: '/licencas', label: 'Gestão de Licenças SaaS', icon: ShieldCheck },
   ];
 
   return (

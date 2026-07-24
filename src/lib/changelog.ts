@@ -10,6 +10,18 @@ export interface ChangeLogEntry {
 
 export const CHANGELOG_HISTORY: ChangeLogEntry[] = [
   {
+    version: '1.2.0',
+    date: '2026-07-24',
+    title: 'Módulo de Venda de Licenças SaaS & Correção do Tema Claro Padrão',
+    changes: [
+      { type: 'fix', description: 'Corrigido o fundo da página (index.html) para garantir visualização no Tema Claro (Light Mode) por padrão.' },
+      { type: 'feature', description: 'Criado o módulo Gestão de Licenças SaaS (/licencas) para cadastro e gerenciamento de compradores do sistema.' },
+      { type: 'feature', description: 'Permite cadastro completo de licenciados: Nome da Empresa, Responsável, CPF/CNPJ, E-mail e Telefone.' },
+      { type: 'feature', description: 'Adicionado recurso de Bloquear e Liberar acesso instantaneamente com base no pagamento.' },
+      { type: 'feature', description: 'Adicionada funcionalidade de Reset de Senha rápida para licenciados.' }
+    ]
+  },
+  {
     version: '1.1.0',
     date: '2026-07-24',
     title: 'Tema Claro Padrão, Dark Mode e Central de Notas de Versão',
