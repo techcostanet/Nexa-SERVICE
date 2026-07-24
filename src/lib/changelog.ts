@@ -10,6 +10,16 @@ export interface ChangeLogEntry {
 
 export const CHANGELOG_HISTORY: ChangeLogEntry[] = [
   {
+    version: '1.5.0',
+    date: '2026-07-24',
+    title: 'Edição de Licenciados, Envio Direto de Credenciais e Persistência no Navegador',
+    changes: [
+      { type: 'feature', description: 'Botão "Editar" no painel de licenças para alterar dados, nome, slug, e-mail e validade de clientes já cadastrados.' },
+      { type: 'feature', description: 'Botão "Enviar Acesso" para disparar instantaneamente credenciais, portal de login e URL exclusiva via WhatsApp ou E-mail.' },
+      { type: 'fix', description: 'Implementada Persistência em LocalStorage no sistema: agora cadastros e edições permanecem salvos no navegador mesmo após F5 ou recarregar a página.' }
+    ]
+  },
+  {
     version: '1.4.0',
     date: '2026-07-24',
     title: 'Portal de Login Unificado & Integração de Gateway de Pagamento com Autobloqueio',

@@ -264,20 +264,61 @@ export const INITIAL_FINANCIAL: FinancialTransaction[] = [
   }
 ];
 
-// Helper local store manager
+// Helper local store manager com Persistência em localStorage
 class MockStore {
-  tenants = [DEMO_TENANT, BLOCKED_DEMO_TENANT];
-  clients = [...INITIAL_CLIENTS];
-  products = [...INITIAL_PRODUCTS];
-  services = [...INITIAL_SERVICES];
-  requests = [...INITIAL_REQUESTS];
-  quotes = [...INITIAL_QUOTES];
-  financial = [...INITIAL_FINANCIAL];
+  tenants: Tenant[] = [];
+  clients: Client[] = [];
+  products: Product[] = [];
+  services: Service[] = [];
+  requests: ServiceRequest[] = [];
+  quotes: Quote[] = [];
+  financial: FinancialTransaction[] = [];
+
+  constructor() {
+    this.loadFromStorage();
+  }
+
+  private loadFromStorage() {
+    try {
+      const savedTenants = localStorage.getItem('nexa_tenants');
+      this.tenants = savedTenants ? JSON.parse(savedTenants) : [DEMO_TENANT, BLOCKED_DEMO_TENANT];
+
+      const savedClients = localStorage.getItem('nexa_clients');
+      this.clients = savedClients ? JSON.parse(savedClients) : [...INITIAL_CLIENTS];
+
+      const savedProducts = localStorage.getItem('nexa_products');
+      this.products = savedProducts ? JSON.parse(savedProducts) : [...INITIAL_PRODUCTS];
+
+      const savedServices = localStorage.getItem('nexa_services');
+      this.services = savedServices ? JSON.parse(savedServices) : [...INITIAL_SERVICES];
+
+      const savedRequests = localStorage.getItem('nexa_requests');
+      this.requests = savedRequests ? JSON.parse(savedRequests) : [...INITIAL_REQUESTS];
+
+      const savedQuotes = localStorage.getItem('nexa_quotes');
+      this.quotes = savedQuotes ? JSON.parse(savedQuotes) : [...INITIAL_QUOTES];
+
+      const savedFinancial = localStorage.getItem('nexa_financial');
+      this.financial = savedFinancial ? JSON.parse(savedFinancial) : [...INITIAL_FINANCIAL];
+    } catch (e) {
+      console.error('Erro ao carregar dados do localStorage', e);
+      this.tenants = [DEMO_TENANT, BLOCKED_DEMO_TENANT];
+    }
+  }
+
+  private saveTenants() {
+    localStorage.setItem('nexa_tenants', JSON.stringify(this.tenants));
+  }
+
+  private saveClients() {
+    localStorage.setItem('nexa_clients', JSON.stringify(this.clients));
+  }
 
   getClients() { return this.clients; }
   addClient(c: Omit<Client, 'id' | 'createdAt'>) {
     const newC: Client = { ...c, id: `client-${Date.now()}`, createdAt: new Date().toISOString() };
     this.clients.push(newC);
+    this.saveClients();
     return newC;
   }
 
@@ -285,6 +326,7 @@ class MockStore {
   addProduct(p: Omit<Product, 'id'>) {
     const newP: Product = { ...p, id: `prod-${Date.now()}` };
     this.products.push(newP);
+    localStorage.setItem('nexa_products', JSON.stringify(this.products));
     return newP;
   }
 
@@ -292,6 +334,7 @@ class MockStore {
   addService(s: Omit<Service, 'id'>) {
     const newS: Service = { ...s, id: `serv-${Date.now()}` };
     this.services.push(newS);
+    localStorage.setItem('nexa_services', JSON.stringify(this.services));
     return newS;
   }
 
@@ -304,6 +347,7 @@ class MockStore {
       createdAt: new Date().toISOString()
     };
     this.requests.unshift(newR);
+    localStorage.setItem('nexa_requests', JSON.stringify(this.requests));
     return newR;
   }
 
@@ -316,6 +360,7 @@ class MockStore {
       createdAt: new Date().toISOString()
     };
     this.quotes.unshift(newQ);
+    localStorage.setItem('nexa_quotes', JSON.stringify(this.quotes));
     return newQ;
   }
 
@@ -329,7 +374,6 @@ class MockStore {
         userAgent: navigator.userAgent,
         notes
       };
-      // Criar transação de receita automática no financeiro!
       this.financial.unshift({
         id: `fin-${Date.now()}`,
         tenantId: q.tenantId,
@@ -344,11 +388,13 @@ class MockStore {
         clientId: q.clientId,
         createdAt: new Date().toISOString()
       });
-      // Atualiza também o status do chamado se vinculado
       if (q.serviceRequestId) {
         const req = this.requests.find(r => r.id === q.serviceRequestId);
         if (req) req.status = 'approved';
       }
+      localStorage.setItem('nexa_quotes', JSON.stringify(this.quotes));
+      localStorage.setItem('nexa_financial', JSON.stringify(this.financial));
+      localStorage.setItem('nexa_requests', JSON.stringify(this.requests));
     }
     return q;
   }
@@ -361,6 +407,7 @@ class MockStore {
         const req = this.requests.find(r => r.id === q.serviceRequestId);
         if (req) req.status = 'rejected';
       }
+      localStorage.setItem('nexa_quotes', JSON.stringify(this.quotes));
     }
     return q;
   }
@@ -369,6 +416,7 @@ class MockStore {
   addTransaction(t: Omit<FinancialTransaction, 'id' | 'createdAt'>) {
     const newT: FinancialTransaction = { ...t, id: `fin-${Date.now()}`, createdAt: new Date().toISOString() };
     this.financial.unshift(newT);
+    localStorage.setItem('nexa_financial', JSON.stringify(this.financial));
     return newT;
   }
 
@@ -382,7 +430,18 @@ class MockStore {
       createdAt: new Date().toISOString()
     };
     this.tenants.unshift(newTenant);
+    this.saveTenants();
     return newTenant;
+  }
+
+  updateTenant(tenantId: string, updatedData: Partial<Tenant>) {
+    const idx = this.tenants.findIndex(t => t.id === tenantId);
+    if (idx !== -1) {
+      this.tenants[idx] = { ...this.tenants[idx], ...updatedData };
+      this.saveTenants();
+      return this.tenants[idx];
+    }
+    return null;
   }
 
   updateTenantStatus(tenantId: string, status: Tenant['status'], expirationDate?: string) {
@@ -390,6 +449,7 @@ class MockStore {
     if (t) {
       t.status = status;
       if (expirationDate) t.expirationDate = expirationDate;
+      this.saveTenants();
     }
     return t;
   }

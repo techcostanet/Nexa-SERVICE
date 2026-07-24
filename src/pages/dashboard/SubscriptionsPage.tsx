@@ -19,7 +19,11 @@ import {
   Clock,
   CreditCard,
   RefreshCw,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Pencil,
+  Send,
+  MessageCircle,
+  ExternalLink
 } from 'lucide-react';
 import { mockStore } from '../../lib/firebase';
 import { Tenant } from '../../types';
@@ -28,6 +32,8 @@ export const SubscriptionsPage: React.FC = () => {
   const [tenants, setTenants] = useState<Tenant[]>(mockStore.getTenants());
   const [search, setSearch] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
+  const [sendingTenant, setSendingTenant] = useState<Tenant | null>(null);
   const [resetFeedback, setResetFeedback] = useState<{ email: string; tempPass: string } | null>(null);
 
   // Form State
@@ -51,36 +57,69 @@ export const SubscriptionsPage: React.FC = () => {
 
   const handleNameChange = (val: string) => {
     setName(val);
-    if (!slug) {
+    if (!slug && !editingTenant) {
       setSlug(val.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'));
     }
   };
 
-  const handleCreateTenant = (e: React.FormEvent) => {
+  const handleOpenEditModal = (tenant: Tenant) => {
+    setEditingTenant(tenant);
+    setName(tenant.name);
+    setSlug(tenant.slug);
+    setCompanyName(tenant.companyName || tenant.name);
+    setOwnerName(tenant.ownerName);
+    setDocument(tenant.document);
+    setEmail(tenant.email);
+    setPhone(tenant.phone);
+    setPlan(tenant.plan);
+    setExpirationDate(tenant.expirationDate || '2026-12-31');
+    setShowAddModal(true);
+  };
+
+  const handleOpenSendModal = (tenant: Tenant) => {
+    setSendingTenant(tenant);
+  };
+
+  const handleSaveTenant = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !ownerName || !email || !document) return;
 
     const finalSlug = slug.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-') || 'cliente-demo';
 
-    mockStore.addTenant({
-      slug: finalSlug,
-      name,
-      companyName: companyName || name,
-      ownerName,
-      document,
-      email,
-      phone,
-      plan,
-      status: 'active',
-      expirationDate: expirationDate || '2026-12-31',
-      settings: {
-        primaryColor: '#0066ff',
-        termsAndConditions: 'Termos padrão de uso do sistema.'
-      }
-    });
+    if (editingTenant) {
+      mockStore.updateTenant(editingTenant.id, {
+        name,
+        slug: finalSlug,
+        companyName: companyName || name,
+        ownerName,
+        document,
+        email,
+        phone,
+        plan,
+        expirationDate
+      });
+    } else {
+      mockStore.addTenant({
+        slug: finalSlug,
+        name,
+        companyName: companyName || name,
+        ownerName,
+        document,
+        email,
+        phone,
+        plan,
+        status: 'active',
+        expirationDate: expirationDate || '2026-12-31',
+        settings: {
+          primaryColor: '#0066ff',
+          termsAndConditions: 'Termos padrão de uso do sistema.'
+        }
+      });
+    }
 
     setTenants([...mockStore.getTenants()]);
     setShowAddModal(false);
+    setEditingTenant(null);
     // Reset Form
     setName('');
     setSlug('');
@@ -285,10 +324,26 @@ export const SubscriptionsPage: React.FC = () => {
                   </td>
 
                   {/* Actions */}
-                  <td className="p-4 text-right space-x-2">
+                  <td className="p-4 text-right space-x-1.5 flex items-center justify-end">
+                    <button
+                      onClick={() => handleOpenEditModal(t)}
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/40 hover:text-blue-600 transition-colors inline-flex items-center gap-1"
+                      title="Editar dados do licenciado"
+                    >
+                      <Pencil className="w-3.5 h-3.5" /> Editar
+                    </button>
+
+                    <button
+                      onClick={() => handleOpenSendModal(t)}
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition-colors inline-flex items-center gap-1"
+                      title="Enviar dados de acesso e licença"
+                    >
+                      <Send className="w-3.5 h-3.5" /> Enviar Acesso
+                    </button>
+
                     <button
                       onClick={() => handleToggleStatus(t.id, t.status)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors inline-flex items-center gap-1 ${
+                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors inline-flex items-center gap-1 ${
                         t.status === 'active'
                           ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100'
                           : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100'
@@ -308,10 +363,10 @@ export const SubscriptionsPage: React.FC = () => {
 
                     <button
                       onClick={() => handleResetPassword(t)}
-                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors inline-flex items-center gap-1"
-                      title="Resetar Senha do Cliente"
+                      className="px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors inline-flex items-center gap-1"
+                      title="Resetar Senha"
                     >
-                      <KeyRound className="w-3.5 h-3.5 text-amber-500" /> Resetar Senha
+                      <KeyRound className="w-3.5 h-3.5 text-amber-500" />
                     </button>
                   </td>
 
@@ -322,24 +377,24 @@ export const SubscriptionsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal Cadastro de Novo Licenciado */}
+      {/* Modal Cadastro/Edição de Licenciado */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
             <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                <UserPlus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                Cadastrar Novo Comprador / Licenciado
+                {editingTenant ? <Pencil className="w-5 h-5 text-blue-600" /> : <UserPlus className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
+                {editingTenant ? `Editar Licenciado: ${editingTenant.name}` : 'Cadastrar Novo Comprador / Licenciado'}
               </h2>
               <button
-                onClick={() => setShowAddModal(false)}
+                onClick={() => { setShowAddModal(false); setEditingTenant(null); }}
                 className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-bold"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleCreateTenant} className="space-y-3">
+            <form onSubmit={handleSaveTenant} className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
@@ -464,7 +519,7 @@ export const SubscriptionsPage: React.FC = () => {
               <div className="pt-3 flex justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowAddModal(false)}
+                  onClick={() => { setShowAddModal(false); setEditingTenant(null); }}
                   className="glass-button-secondary text-xs"
                 >
                   Cancelar
@@ -473,10 +528,89 @@ export const SubscriptionsPage: React.FC = () => {
                   type="submit"
                   className="glass-button-primary text-xs"
                 >
-                  Confirmar & Liberar Licença
+                  {editingTenant ? 'Salvar Alterações' : 'Confirmar & Liberar Licença'}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Envio de Dados de Acesso e Licença */}
+      {sendingTenant && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <Send className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                Enviar Acesso - {sendingTenant.name}
+              </h2>
+              <button
+                onClick={() => setSendingTenant(null)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <p className="text-slate-600 dark:text-slate-300">
+                Selecione o canal para enviar os dados de acesso oficiais e a URL de solicitação de chamados para o cliente:
+              </p>
+
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+                <p><strong>Empresa:</strong> {sendingTenant.name}</p>
+                <p><strong>Responsável:</strong> {sendingTenant.ownerName}</p>
+                <p><strong>E-mail / Login:</strong> {sendingTenant.email}</p>
+                <p><strong>Portal de Login:</strong> https://nexa-service.web.app/login</p>
+                <p><strong>URL Exclusiva do Cliente:</strong> https://nexa-service.web.app/solicitar/{sendingTenant.slug}</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                {/* WhatsApp button */}
+                <a
+                  href={`https://wa.me/${sendingTenant.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                    `Olá ${sendingTenant.ownerName}! Suas credenciais do Nexa SERVICE foram geradas com sucesso.\n\n` +
+                    `📌 *Portal de Login:* https://nexa-service.web.app/login\n` +
+                    `📧 *E-mail:* ${sendingTenant.email}\n` +
+                    `🔗 *Link do seu Portal de Chamados:* https://nexa-service.web.app/solicitar/${sendingTenant.slug}\n\n` +
+                    `Qualquer dúvida estamos à disposição!`
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="glass-button-success py-2.5 text-xs w-full flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Enviar via WhatsApp
+                </a>
+
+                {/* Email button */}
+                <a
+                  href={`mailto:${sendingTenant.email}?subject=${encodeURIComponent(`Dados de Acesso - ${sendingTenant.name}`)}&body=${encodeURIComponent(
+                    `Olá ${sendingTenant.ownerName},\n\n` +
+                    `Segue seus dados de acesso ao Nexa SERVICE:\n\n` +
+                    `Portal de Login: https://nexa-service.web.app/login\n` +
+                    `E-mail de Acesso: ${sendingTenant.email}\n` +
+                    `URL Exclusiva de Chamados: https://nexa-service.web.app/solicitar/${sendingTenant.slug}\n\n` +
+                    `Atenciosamente,\nEquipe Nexa SERVICE`
+                  )}`}
+                  className="glass-button-primary py-2.5 text-xs w-full flex items-center justify-center gap-2"
+                >
+                  <Mail className="w-4 h-4" />
+                  Enviar via E-mail
+                </a>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  onClick={() => setSendingTenant(null)}
+                  className="glass-button-secondary text-xs"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       )}
