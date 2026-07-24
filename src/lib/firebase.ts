@@ -45,6 +45,22 @@ export const DEMO_TENANT: Tenant = {
   createdAt: new Date().toISOString()
 };
 
+export const BLOCKED_DEMO_TENANT: Tenant = {
+  id: 'tenant-blocked-demo',
+  slug: 'frio-max',
+  name: 'FrioMax Climatização & Refrigeração',
+  companyName: 'FrioMax ME',
+  ownerName: 'Marcos Souza',
+  document: '11.222.333/0001-44',
+  email: 'inadimplente@demo.com.br',
+  phone: '(11) 97777-6666',
+  plan: 'pro',
+  status: 'blocked',
+  expirationDate: '2026-06-01',
+  settings: {},
+  createdAt: new Date().toISOString()
+};
+
 export const INITIAL_CLIENTS: Client[] = [
   {
     id: 'client-1',
@@ -250,7 +266,7 @@ export const INITIAL_FINANCIAL: FinancialTransaction[] = [
 
 // Helper local store manager
 class MockStore {
-  tenants = [DEMO_TENANT];
+  tenants = [DEMO_TENANT, BLOCKED_DEMO_TENANT];
   clients = [...INITIAL_CLIENTS];
   products = [...INITIAL_PRODUCTS];
   services = [...INITIAL_SERVICES];

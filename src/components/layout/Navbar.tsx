@@ -88,13 +88,15 @@ export const Navbar: React.FC<NavbarProps> = () => {
 
           <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block" />
 
-          <div className="flex items-center gap-2 pl-1">
-            <UserCircle2 className="w-8 h-8 text-slate-500 dark:text-slate-400" />
-            <div className="hidden md:block text-left">
-              <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">Administrador</p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">admin@nexa.com</p>
-            </div>
+          <div className="flex items-center gap-2 pl-1 border-l border-slate-200 dark:border-slate-800 ml-1 pl-3">
+          <UserCircle2 className="w-8 h-8 text-slate-500 dark:text-slate-400" />
+          <div className="hidden md:block text-left">
+            <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">Administrador</p>
+            <a href="/login" className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline block">
+              Sair / Trocar de Conta
+            </a>
           </div>
+        </div>
         </div>
       </header>
 

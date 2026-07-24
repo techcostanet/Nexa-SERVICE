@@ -10,6 +10,17 @@ export interface ChangeLogEntry {
 
 export const CHANGELOG_HISTORY: ChangeLogEntry[] = [
   {
+    version: '1.4.0',
+    date: '2026-07-24',
+    title: 'Portal de Login Unificado & Integração de Gateway de Pagamento com Autobloqueio',
+    changes: [
+      { type: 'feature', description: 'Portal de Login Unificado (/login) para prestadores e clientes com validação automática de status da conta.' },
+      { type: 'feature', description: 'Bloqueio automático de acesso no Login caso o licenciado esteja inadimplente com aviso informativo.' },
+      { type: 'feature', description: 'Módulo de Integração com Gateways de Pagamento (Asaas / Mercado Pago / Stripe) no painel de licenças.' },
+      { type: 'feature', description: 'Configuração de Webhook de retorno para acionamento do Autobloqueio inteligente por falta de pagamento.' }
+    ]
+  },
+  {
     version: '1.3.0',
     date: '2026-07-24',
     title: 'URLs Personalizadas por Cliente (Multi-Tenant Slugs) & Recomendações SaaS',

@@ -12,6 +12,7 @@ import { FinancialPage } from './pages/dashboard/FinancialPage';
 import { SubscriptionsPage } from './pages/dashboard/SubscriptionsPage';
 import { ClientRequestPage } from './pages/public/ClientRequestPage';
 import { QuoteApprovalPage } from './pages/public/QuoteApprovalPage';
+import { LoginPage } from './pages/public/LoginPage';
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -32,7 +33,8 @@ export function App() {
     <ThemeProvider>
       <BrowserRouter>
         <Routes>
-          {/* Rotas Públicas */}
+          {/* Rotas Públicas & Autenticação */}
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/solicitar/:tenantSlug" element={<ClientRequestPage />} />
           <Route path="/aprovar/:quoteToken" element={<QuoteApprovalPage />} />
 
